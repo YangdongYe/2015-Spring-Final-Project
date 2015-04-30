@@ -12,6 +12,8 @@ var svg = d3.select('.canvas')
 /*setting base*/
 var year0 = 1990, year1 = 2012;
 
+var scaleData = d3.scale.linear().range([0,100]);
+
 /* begin to load data */
 console.log("Start loading data");
 queue()
@@ -83,7 +85,7 @@ function dataLoaded(err, coalPro, hyroPro, ngasPro, nuclPro, petrPro) {
                 dataSum[i].valueHyro = hyroPro[i].dataSeries[j].value;
                 dataSum[i].valueNgas = ngasPro[i].dataSeries[j].value;
                 dataSum[i].valueNucl = nuclPro[i].dataSeries[j].value;
-                dataSum[i].valuePter = petrPro[i].dataSeries[j].value;
+                dataSum[i].valuePetr = petrPro[i].dataSeries[j].value;
             }
         }
     }
@@ -97,12 +99,18 @@ function dataLoaded(err, coalPro, hyroPro, ngasPro, nuclPro, petrPro) {
     });
 
     /*Get Top 10*/
-    var topTen = [];
-    for (var i=0;i<10;i++) {
+    var topTenCID = [];
+    var topTenCoal = [];
+    var topTenHyro = [];
+    var topTenNgas = [];
+    var topTenNucl = [];
+    var topTenPetr = [];
+
+    /*for (var i=0;i<10;i++) {
         topTen[i] = [{valueSum:null,
             countryIDDisplay:null,
             valueCoal:null, valueHyro:null, valueNgas:null, valueNucl:null, valuePetr:null}];
-    }
+    }*/
     var i = 0, j = 0;
     while (i<10) {
         if ((dataSum[j].countryIDDisplay != 'WLD') &&
@@ -131,18 +139,48 @@ function dataLoaded(err, coalPro, hyroPro, ngasPro, nuclPro, petrPro) {
             (dataSum[j].countryIDDisplay != 'ECA') &&
             (dataSum[j].countryIDDisplay != 'EAS') &&
             (dataSum[j].countryIDDisplay != 'EAP') &&
-            (dataSum[j].countryIDDisplay != 'ARB')) {
-            topTen[i] = dataSum[j];
+            (dataSum[j].countryIDDisplay != 'ARB') &&
+            (dataSum[j].countryIDDisplay != 'SAS')) {
+            topTenCID.push(dataSum[j].countryIDDisplay);
+            topTenCoal.push(dataSum[j].valueCoal);
+            topTenHyro.push(dataSum[j].valueHyro);
+            topTenNgas.push(dataSum[j].valueNgas);
+            topTenNucl.push(dataSum[j].valueNucl);
+            topTenPetr.push(dataSum[j].valuePetr);
             i++;
         }
         j++;
     }
 
-    console.log(topTen);
-
-    draw(topTen);
+    console.log("ID",topTenCID);
+    console.log("Coal",topTenCoal);
+    console.log("Hyro",topTenHyro);
+    console.log("Ngas",topTenNgas);
+    console.log("Nucl",topTenNucl);
+    console.log("Petr",topTenPetr);
+    //draw(topTen);
 }
 
-function draw(topTen) {
+function draw(data) {
+    console.log("0",data[0]);
 
+    var dataNo0 = [];
+    dataNo0.push(data[0]);
+    //console.log(d1,d2);
+    var rects = svg.append("g")
+        .selectAll('rect')
+        .data(dataNo0)
+        .enter()
+        .append('rect')
+        .attr("class","rect")
+        .style('fill','rgb(230,200,150)')
+        .attr("x",function(d,i) {
+            console.log("d",d);
+            console.log(i);
+            return i*20;
+        })
+        .attr("y",0)
+        .attr("width",20)
+        .attr("height",30)
+        .style("opacity",1);
 }
